@@ -1,14 +1,16 @@
 import React, { useEffect, useReducer } from 'react'
 import Header from './Header'
-import Question from './Question'
+import Main_ from './Main_'
 import Loader from './Loader'
 import Error from './Error'
 import StartScreen from './StartScreen'
-import "./App.css"
+import Question from './Question'
+import "../App.css"
 
 const initialState ={
   questions:[],
   status: 'loading',
+  index: 0,
 }
 
 function reducer(state, action){
@@ -26,6 +28,11 @@ function reducer(state, action){
         ...state,
         status: "error",
       };
+    case "start":
+      return {
+        ...state,
+        status: "active"
+      };
     default :
       throw new Error("Yo what going on");
 
@@ -35,7 +42,7 @@ function reducer(state, action){
 
 export default function App() {
   
-  const [{questions, status}, dispatch] = useReducer(reducer, initialState);
+  const [{questions, status, index}, dispatch] = useReducer(reducer, initialState);
 
   const numQuestions = questions.length;
 
@@ -49,11 +56,12 @@ export default function App() {
   return (
     <div className='app'>
     <Header />
-    <Question>
+    <Main_>
       {status==="loading" && <Loader/>}
       {status==="error" && <Error/>}
-      {status==="ready" && <StartScreen numQuestions={numQuestions}/>}
-    </Question>
+      {status==="ready" && <StartScreen numQuestions={numQuestions} dispatch={dispatch}/>}
+      {status==="active" && <Question question={questions[index]}/>}
+    </Main_>
     </div>
   )
 }
